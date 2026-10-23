@@ -99,7 +99,7 @@
    {
       with( document.gui )
       {
-         var sImageFile = selection.searchAndReplace( "\\", "/" );
+         var sImageFile = selection.searchAndReplace( "\\", "../" );
          if( sImageFile != "" )
          {
             var sDocumentBase = opener._ad.documentBase;
@@ -145,14 +145,14 @@
          var parentDirs = fields.length - 1;
 
          // get the number of total directories from the root
-         fields = sDocumentBase.split( "/" );
+         fields = sDocumentBase.split( "../" );
          var totalDirs = fields.length - 2;
 
          // translate parent directories into actual directories
-         var s = "/";
+         var s = "../";
          for( i = 0; i < (totalDirs - parentDirs); i++ )
          {
-            s = s + fields[i+1] + "/";
+            s = s + fields[i+1] + "../";
          }
 
          // strip out parent directory symbols
@@ -160,9 +160,9 @@
          sCodeBase = sCodeBase.searchAndReplace( "..", "" );
 
          sCodeBase = s + sCodeBase;
-         if( sCodeBase.charAt( sCodeBase.length - 1 ) != "/" )
+         if( sCodeBase.charAt( sCodeBase.length - 1 ) != "../" )
          {
-            sCodeBase = sCodeBase + "/";
+            sCodeBase = sCodeBase + "../";
          }
       }
 
@@ -172,8 +172,8 @@
       sImageFile = sImageFile.substring( i + 1 );
 
       // determine relativeness from codebase
-      fields1 = sCodeBase.split( "/" );
-      fields2 = sImageFile.split( "/" );
+      fields1 = sCodeBase.split( "../" );
+      fields2 = sImageFile.split( "../" );
       matched = 0;
       for( i = 0 ; i < fields1.length && i < fields2.length; i++ )
       {
@@ -208,7 +208,7 @@
       var leftover = fields2.length - matched;
       for( i = 1; i < leftover; i++ )
       {
-         sImageFile = sImageFile + "/" + fields2[fields2.length - leftover + i];
+         sImageFile = sImageFile + "../" + fields2[fields2.length - leftover + i];
       }
 
       return sImageFile;

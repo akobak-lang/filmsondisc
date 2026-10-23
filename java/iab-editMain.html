@@ -316,7 +316,7 @@
       with( this )
       {
          var s = "" + applet.getDocumentBase();
-         documentBase = s.substring( 0, s.lastIndexOf( "/" ) + 1 );
+         documentBase = s.substring( 0, s.lastIndexOf( "../" ) + 1 );
          codeBase     = "" + applet.getCodeBase();
          className    = applet.getClass().getName();
          width        = applet.getSize().width;
@@ -538,9 +538,9 @@
                codeBase.value = sCodeBase;
             }
 
-            if( sDocumentBase.substring( sDocumentBase.length - 1 ) != "/" )
+            if( sDocumentBase.substring( sDocumentBase.length - 1 ) != "../" )
             {
-               sDocumentBase += "/";
+               sDocumentBase += "../";
                documentBase.value = sDocumentBase;
             }
          }
