@@ -81,3 +81,41 @@ hr {
 
 /* --- Prevent overflow on long titles/URLs --- */
 body, td, p { word-wrap: break-word; overflow-wrap: break-word; }
+
+/* --- Phones: stack the side-by-side columns (desktop is unchanged) --- */
+@media (max-width: 700px) {
+  table.fod-cols,
+  table.fod-cols > tbody,
+  table.fod-cols > tbody > tr,
+  table.fod-cols > tbody > tr > td,
+  table.fod-cols > tr > td {
+    display: block;
+    width: auto !important;
+    height: auto !important;
+  }
+  table.fod-cols > tbody > tr,
+  table.fod-cols > tr { display: flex; flex-direction: column; }
+  td.fod-gap { display: none !important; }
+  table.fod-cols > tbody > tr > td + td { margin-top: 16px; }
+  /* FrontPage's left border (current-reviews list) goes after the main content */
+  table.fod-cols > tbody > tr > td[width="1%"],
+  table.fod-cols > tr > td[width="1%"] { order: 2; margin-top: 16px; }
+
+  /* Nothing wider than the screen */
+  table, td { max-width: 100%; }
+  table[width] { width: 100% !important; }
+  td[width] { width: auto !important; }
+  [height] { height: auto !important; }
+
+  img.fod-bigimg {
+    float: none !important;
+    display: block;
+    margin: 10px auto !important;
+  }
+
+  /* Wide data tables (e.g. the DVD MIA lists) scroll sideways in their own box */
+  .fod-scroll, #dvdmia-results { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .fod-scroll > table, #dvdmia-results table { width: auto !important; max-width: none; }
+
+  body { margin: 8px 10px; }
+}
