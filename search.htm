@@ -34,7 +34,7 @@
       color="#000000">Site Info</font></a>&nbsp;&nbsp;&nbsp;<a
       href="index.htm" target="_parent"><font
       color="#000000">Home</font></a>&nbsp;&nbsp;<a
-      href="mailto:stu@filmsondisc.com"><font color="#000000">E-mail</font></a>&nbsp;<br>
+      href="mailto:stu@filmsondisc.com"><font color="#000000">E-mail</font></a><br><input form="fod-search" type="search" name="q" class="fod-q" placeholder="Search Films on Disc" aria-label="Search Films on Disc"> <button form="fod-search" type="submit" class="fod-go">Search</button>&nbsp;<br>
       © 2002 Films on Disc&nbsp;&nbsp;Stuart J. Kobak ALL RIGHTS RESERVED.<br>
       </font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
   </tr>
@@ -48,9 +48,7 @@
       <td width="325" height="598" valign="top">&nbsp;
         <p>&nbsp;</p>
         <p>&nbsp;</p>
-        <!--webbot bot="Search" S-Index="All" S-Fields S-Text="Search for:"
-        I-Size="20" S-Submit="Start Search" S-Clear="Reset"
-        S-TimestampFormat="%m/%d/%Y" TAG="BODY" startspan b-useindexserver="0" --><form action="search.htm" method="POST"><input type="hidden" name="VTI-GROUP" value="0"><p><b>Search for: </b><input type="text" name="search" size="20" value></p><p><input type="submit" value="Start Search"><input type="reset" value="Reset"></p></form><!--webbot bot="Search" endspan i-checksum="12774" -->
+        <form action="https://www.google.com/search" method="get"><input type="hidden" name="as_sitesearch" value="filmsondisc.com"><p><b>Search Films on Disc: </b><input type="search" name="q" size="20" class="fod-q"></p><p><button type="submit" class="fod-go">Search</button></p><p><font size="1">Results come from Google.</font></p></form>
         <p>&nbsp;</p>
         <p>&nbsp;</p>
         <p>&nbsp;</td>
@@ -64,6 +62,7 @@
 </table>
 &nbsp;
 
+<form id="fod-search" action="https://www.google.com/search" method="get"><input type="hidden" name="as_sitesearch" value="filmsondisc.com"></form>
 <script src="fod-mobile.js"></script>
 </body>
 

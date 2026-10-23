@@ -119,3 +119,26 @@ body, td, p { word-wrap: break-word; overflow-wrap: break-word; }
 
   body { margin: 8px 10px; }
 }
+
+/* --- Google site search box in the header --- */
+.fod-q {
+  font: inherit;
+  font-size: 13px;
+  padding: 3px 7px;
+  margin-top: 6px;
+  width: 220px;
+  max-width: 60vw;
+  border: 1px solid #999;
+  border-radius: 3px;
+}
+.fod-go {
+  font: inherit;
+  font-size: 13px;
+  padding: 3px 10px;
+  color: #fff;
+  background: #000;
+  border: 1px solid #000;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.fod-go:hover, .fod-go:focus { background: #cc0000; border-color: #cc0000; }
