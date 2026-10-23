@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>interActive Banner Output</title>
+<script language=JavaScript>
+   function doOnLoad()
+   {
+      if( opener == null ) return;
+      if( opener.name != "iabmain" ) return;
+      document.output.HTML.value = opener._ad.getHTML();
+      document.output.HTML.focus();
+      document.output.HTML.select();
+   }
+</script>
+<style type=text/css>
+   BODY
+   {
+      font-family: arial;
+      font-size: 12pt;
+      color: black;
+   }
+   A
+   {
+      font-family: arial;
+      font-size: 12pt;
+      color: black;
+   }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body onLoad=doOnLoad()>
+<ol type=1>
+   <li>Select the HTML code within the box below if it isn't already selectetd.
+   <li>Copy it to the clipboard by right-clicking the selected text and selecting
+       <i>"copy"</i>.
+   <li>Paste it to your HTML page.
+   <li><a href=# onClick="window.close()">Click here</a> to close this window
+      when done.
+</ol>
+<form name=output>
+   <textarea name=HTML nowrap cols=30 rows=8></textarea>
+</form>
+</body>
+</html>

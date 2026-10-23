@@ -1,0 +1,83 @@
+/* filmsondisc — responsive layout overrides
+   Makes fixed-width table layouts scale to the browser window.
+   Browsers distribute extra horizontal space proportionally across
+   pixel-width <td> columns when their parent <table> is fluid. */
+
+body {
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===== Phase 6: Modernize Look, Keep the Spirit ===== */
+
+/* --- Base typography --- */
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #111;
+  background: #fff;
+}
+
+/* Tables inherit body font (inline table styles otherwise shadow body) */
+td, th {
+  font-family: inherit;
+}
+
+/* Comfortable paragraph spacing and line-height for review text */
+p {
+  margin-top: 0;
+  margin-bottom: 0.9em;
+  line-height: 1.6;
+}
+
+/* --- <font size> attribute → modern px --- */
+/* Original HTML renders: 1≈9px  2≈11px  3=16px  4=18px  5=24px  6=32px  7=48px */
+font[size="1"] { font-size: 13px !important; line-height: 1.6 !important; }
+font[size="2"] { font-size: 14px !important; line-height: 1.6 !important; }
+font[size="3"] { font-size: 15px !important; }
+font[size="4"] { font-size: 18px !important; }
+font[size="5"] { font-size: 22px !important; }
+font[size="6"] { font-size: 28px !important; }
+font[size="7"] { font-size: 36px !important; }
+
+/* --- <font face> → defer to system stack --- */
+font[face] { font-family: inherit !important; }
+
+/* --- Normalize common inline pt sizes --- */
+/* 8pt ≈ 10.7px (captions, sidebar labels) → 13px */
+[style*="font-size: 8pt"]  { font-size: 13px !important; line-height: 1.6 !important; }
+/* 10pt ≈ 13.3px (body review text) → 15px */
+[style*="font-size: 10pt"] { font-size: 15px !important; }
+/* 12pt = 16px (title bars) — already good, leave as-is */
+
+/* --- Fix cramped line-height inline styles (3,612 occurrences) --- */
+[style*="line-height: 100%"],
+[style*="line-height:100%"] {
+  line-height: 1.6 !important;
+}
+
+/* --- Remove negative margin hacks --- */
+[style*="margin-top: -"]    { margin-top: 0 !important; }
+[style*="margin-bottom: -"] { margin-bottom: 0 !important; }
+
+/* --- Accessible link colors — dark red respects the site's red/black identity --- */
+a:link    { color: #cc0000; text-decoration: none; }
+a:visited { color: #880000; }
+a:hover   { color: #cc0000; text-decoration: underline; }
+a:focus   { outline: 2px solid #cc0000; outline-offset: 2px; }
+a         { transition: color 0.1s; }
+
+/* --- Horizontal rule: clean editorial separator --- */
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
+/* --- Prevent overflow on long titles/URLs --- */
+body, td, p { word-wrap: break-word; overflow-wrap: break-word; }

@@ -1,0 +1,119 @@
+<html>
+<head>
+<script language=JavaScript>
+   var gui = parent.iabmain;
+   function go(anchor)
+   {
+      gui.document.location = "iab-editMain.html#" + anchor;
+   }
+   function doPreviewBanner()
+   {
+      gui.doView();
+   }
+   function doGenerateHTML()
+   {
+      gui.doGenerate();
+   }
+</script>
+<style type=text/css>
+   BODY
+   {
+      font-family: arial;
+      font-size: 12pt;
+      color: black;
+   }
+   TD
+   {
+      font-family: arial;
+      font-size: 12pt;
+      font-weight: bold;
+      color: black;
+   }
+   A
+   {
+      font-family: arial;
+      font-size: 12pt;
+      font-weight: bold;
+      color: black;
+      text-decoration: normal;
+   }
+   .DESC
+   {
+      font-family: arial;
+      font-size: 10pt;
+      font-weight: normal;
+      color: blue;
+   }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<div align=center>
+<p>
+<form>
+   <input type=button value="Preview Banner" onClick=doPreviewBanner()>
+   <hr width=100%>
+   <table border=0 cellpadding=3 cellspacing=3>
+      <tr valign=top>
+         <td>•</td>
+         <td><a href=# onClick="go('INPUT')">Input File</a>
+            <br>
+            <span class=DESC>
+            Read in applet values from an existing HTML file.
+            </span>
+         </td>
+      </tr>
+      <tr valign=top>
+         <td>•</td>
+         <td><a href=# onClick="go('GENERAL')">General Options</a>
+            <br>
+            <span class=DESC>
+            Specify overall options like background color, width, height, display
+            algorithm, etc.
+            </span>
+         </td>
+      </tr>
+      <tr valign=top>
+         <td>•</td>
+         <td><a href=# onClick="go('TITLE')">Title Font Options</a>
+            <br>
+            <span class=DESC>
+            Specify font options for all banner titles.
+            </span>
+         </td>
+      </tr>
+      <tr valign=top>
+         <td>•</td>
+         <td><a href=# onClick="go('DESCRIPTION')">Description Font Options</a>
+            <br>
+            <span class=DESC>
+            Specify font options for all banner descriptions.
+            </span>
+         </td>
+      </tr>
+      <tr valign=top>
+         <td>•</td>
+         <td><a href=# onClick="go('LINK')">Link Options</a>
+            <br>
+            <span class=DESC>
+            Specify options for all banner links.
+            </span>
+         </td>
+      </tr>
+      <tr valign=top>
+         <td>•</td>
+         <td><a href=# onClick="go('BANNER')">Banner Data</a>
+            <br>
+            <span class=DESC>
+            Add, delete, and move banners.  Specify banner title, text, and image.
+            </span>
+         </td>
+      </tr>
+   </table>
+   <hr width=100%>
+   <input type=button value="Generate HTML" onClick=doGenerateHTML()>
+</form>
+</div>
+</body>
+</html>

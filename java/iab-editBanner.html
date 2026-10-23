@@ -1,0 +1,297 @@
+<html>
+<head>
+<script>
+   var _banner = opener.getSelectedBanner();
+   var _hlp    = new Help();
+   var _warned = !(navigator.appName.indexOf( "Internet Explorer" ) > 0);
+
+   String.prototype.searchAndReplace = str_searchAndReplace;
+
+   function str_searchAndReplace(search, replace)
+   {
+      var s = "";
+      var t = this;
+      var i = t.indexOf( search );
+      while( i >= 0 )
+      {
+         s = s + t.substring( 0, i ) + replace;
+         t = t.substring( i + search.length );
+         i = t.indexOf( search );
+      }
+      s = s + t;
+      return s;
+   }
+
+   function Help()
+   {
+      this.title = "This is the title that will be displayed at the top of the "
+                 + "current banner.";
+      this.image = "This is the image file that will be displayed to the left "
+                 + "of the banner.  The file specification must be relative to "
+                 + "the interActive Banner's codebase value.";
+      this.desc = "This is the description that will be displayed to the "
+                + "right of the banner, below the title.";
+      this.action = "This is the action that will be performed when the user "
+                  + "clicks on the banner.  The URL must be absolute and not "
+                  + "relative.  Examples:\n"
+                  + "\n\tmailto://webmaster@iasys.com "
+                  + "\n\thttp://www.iasys.com";
+   }
+
+   function doOnLoad()
+   {
+      with( document.gui )
+      {
+         title.focus();
+         title.value = _banner.title;
+         image.value = _banner.image;
+         copy.value  = _banner.copy;
+         url.value   = _banner.link;
+      }
+   }
+
+   function doOK()
+   {
+      with( opener.getSelectedBanner() )
+      {
+         title = document.gui.title.value;
+         image = document.gui.image.value;
+         copy  = document.gui.copy.value;
+         link  = document.gui.url.value;
+         var i = opener.document.gui.banners.selectedIndex;
+         opener.drawBannerData();
+         opener.document.gui.banners.selectedIndex = i;
+         doClose();
+      }
+   }
+
+   function doClose()
+   {
+      window.opener.focus();
+      window.close();
+   }
+
+   function doChangeProtocol()
+   {
+      with( document.gui )
+      {
+         var sURL = url.value;
+         var sSelectedProtocol = protocol.options[protocol.selectedIndex].value;
+         var bFound = false;
+         for( var i = 0; !bFound && i < protocol.options.length; i++ )
+         {
+            var sProtocol = protocol.options[i].value + "://";
+            if( sURL.indexOf( sProtocol ) == 0 )
+            {
+               bFound = true;
+               url.value = sSelectedProtocol + "://"
+                         + sURL.substring( sProtocol.length );
+            }
+         }
+         if( !bFound )
+         {
+            url.value = sSelectedProtocol + "://" + sURL;
+         }
+      }
+   }
+
+   function doChangeImage(selection)
+   {
+      with( document.gui )
+      {
+         var sImageFile = selection.searchAndReplace( "\\", "/" );
+         if( sImageFile != "" )
+         {
+            var sDocumentBase = opener._ad.documentBase;
+            var sCodeBase = opener._ad.codeBase;
+            sImageFile = "file:/" + sImageFile;
+            image.value = makeRelative( sDocumentBase, sCodeBase, sImageFile );
+
+            // warn user that under IE, images stemming from parent directories
+            // won't be shown locally but will show on the 'net
+            if( !_warned && image.value.indexOf( "../" ) >= 0 )
+            {
+               alert( "Images with relative paths leading to parent directories "
+                    + "will not display under Internet Explorer when the "
+                    + "interActive Banner is previewed in local mode.  However, "
+                    + "the images will properly display when the HTML page is "
+                    + "viewed on your website." );
+               _warned = true;
+            }
+         }
+      }
+   }
+
+   function makeRelative(sDocumentBase, sCodeBase, sImageFile)
+   {
+      sDocumentBase = sDocumentBase.searchAndReplace( "|", ":" );
+      var i = sDocumentBase.lastIndexOf( ":/" );
+      sDocumentBase = sDocumentBase.substring( i + 1 );
+
+      if( sCodeBase == "." || sCodeBase == "./" )
+      {
+         sCodeBase = sDocumentBase;
+      }
+      else
+      {
+         // strip out current directory symbol
+         if( sCodeBase.indexOf( "./" ) == 0 )
+         {
+            sCodeBase = sCodeBase.substring( 2 );
+         }
+
+         // get the number of parent directory tokens relative to the codebase
+         fields = sCodeBase.split( ".." );
+         var parentDirs = fields.length - 1;
+
+         // get the number of total directories from the root
+         fields = sDocumentBase.split( "/" );
+         var totalDirs = fields.length - 2;
+
+         // translate parent directories into actual directories
+         var s = "/";
+         for( i = 0; i < (totalDirs - parentDirs); i++ )
+         {
+            s = s + fields[i+1] + "/";
+         }
+
+         // strip out parent directory symbols
+         sCodeBase = sCodeBase.searchAndReplace( "../", "" );
+         sCodeBase = sCodeBase.searchAndReplace( "..", "" );
+
+         sCodeBase = s + sCodeBase;
+         if( sCodeBase.charAt( sCodeBase.length - 1 ) != "/" )
+         {
+            sCodeBase = sCodeBase + "/";
+         }
+      }
+
+      // remove protocol and drive letter from image file
+      sImageFile = sImageFile.searchAndReplace( "|", ":" );
+      i = sImageFile.lastIndexOf( ":/" );
+      sImageFile = sImageFile.substring( i + 1 );
+
+      // determine relativeness from codebase
+      fields1 = sCodeBase.split( "/" );
+      fields2 = sImageFile.split( "/" );
+      matched = 0;
+      for( i = 0 ; i < fields1.length && i < fields2.length; i++ )
+      {
+         if( fields1[i+1] == fields2[i+1] )
+         {
+            matched++;
+         }
+         else
+         {
+            break;
+         }
+      }
+
+      // set parent directory symbols to front as necessary
+      sImageFile = "";
+      var parentDirs = (fields1.length - 2) - matched;
+      if( matched > 0 )
+      {
+         for( i = 0; i < parentDirs; i++ )
+         {
+            sImageFile = sImageFile + "../";
+         }
+         sImageFile = sImageFile.substring( 0, sImageFile.length - 1 );
+
+         if( parentDirs == 0 )
+         {
+            sImageFile = sImageFile + ".";
+         }
+      }
+
+      // now append separate directory tree and image file
+      var leftover = fields2.length - matched;
+      for( i = 1; i < leftover; i++ )
+      {
+         sImageFile = sImageFile + "/" + fields2[fields2.length - leftover + i];
+      }
+
+      return sImageFile;
+   }
+
+   function doClickImage()
+   {
+      if( !document.all )
+      {
+         doChangeImage();
+      }
+   }
+
+   function getStyle(width, height, more)
+   {
+      var l = (screen.availWidth - width) / 2;
+      var t = (screen.availHeight - height) / 2;
+      var s = "width=" + width
+            + ",height=" + height
+            + ",left=" + l
+            + ",top=" + t
+            + "," + more;
+      return s;
+   }
+
+   function doBrowse()
+   {
+      var style = getStyle( 400, 200, "scrollbars=0,resizable=1,resizeable=1" );
+      _wnd = window.open( "iab-editFile.html", "IABFILE", style );
+      _wnd.focus();
+   }
+</script>
+<style type=text/css>
+   TD { font-family:arial; font-size:12pt; color:black }
+   TH { font-family:arial; font-size:12pt; color:white; background:navy }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body onLoad=doOnLoad()>
+<form name=gui>
+<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%><tr valign=center align=center><td>
+<table border=1 cellpadding=0 cellspacing=0><tr><td>
+<table border=0 cellpadding=3 cellspacing=0 bgcolor=silver>
+   <tr>
+      <th colspan=2 bgcolor=navy><font color=white>Banner Options</font></th>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.title)">Title</a></td>
+      <td><input name=title></td>
+   </tr>
+   <tr>
+      <td>&nbsp;</td>
+      <td><font color=red>The image file must be relative to the codebase.</font></font>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.image)">Image File</a></td>
+      <td nowrap><input name=image onChange=doChangeImage(this.value)><input type=button value="Select File..." onClick=doBrowse()></td>
+   </tr>
+   <tr valign=top>
+      <td align=right><a href="javascript:alert(_hlp.desc)">Description</a></td>
+      <td><textarea name=copy rows=5 cols=35 wrap></textarea></td>
+   </tr>
+   <tr valign=top>
+      <td align=right><a href="javascript:alert(_hlp.action)">Click&nbsp;Action</a></td>
+      <td>
+         <select name=protocol onChange=doChangeProtocol()>
+            <option value=mailto>Email
+            <option value=http selected>Link to web page
+            <option value=ftp>Link to FTP site
+         </select><br>
+         <input name=url value="http://" size=35>
+      </td>
+   </tr>
+   <tr valign=top>
+      <td align=center colspan=2>
+         <input type=button value="OK"     width=100 onClick=doOK()>
+         <input type=button value="Cancel" width=100 onClick=doClose()>
+      </td>
+   </tr>
+</table>
+</td></tr></table>
+</td></tr></table>
+</form>
+</body>
+</html>

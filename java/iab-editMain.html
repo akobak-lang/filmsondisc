@@ -1,0 +1,897 @@
+<html>
+<head>
+<script>
+   var _wnd        = null;
+   var _sInputFile = null;
+   var _ad         = new AppletData();
+   var _hlp        = new Help();
+   var _ctlColor   = null;
+
+   String.prototype.fixQuote         = str_fixQuote;
+   String.prototype.fixPipe          = str_fixPipe;
+   String.prototype.searchAndReplace = str_searchAndReplace;
+
+   function str_searchAndReplace(search, replace)
+   {
+      var s = "";
+      var t = this;
+      var i = t.indexOf( search );
+      while( i >= 0 )
+      {
+         j = i;
+         s = s + t.substring( 0, i ) + replace;
+         t = t.substring( i + search.length );
+         i = t.indexOf( search );
+      }
+      s = t;
+      return s;
+   }
+
+   function str_fixQuote()
+   {
+      return this.searchAndReplace( "\"", "&quot;" );
+   }
+
+   function str_fixPipe()
+   {
+      return this.searchAndReplace( "|", ":" );
+   }
+
+   function Help()
+   {
+      this.documentBase = "This is the directory where the HTML file containing "
+                        + "the interActive Banner code resides.  It serves as "
+                        + "an anchor for the code base.  This value is "
+                        + "automatically set when an HTML file is loaded but "
+                        + "can be overwritten by the user.";
+      this.codeBase = "This is the subdirectory where the interActive Banner "
+                    + "*.class file and the navigation.gif file are located.  "
+                    + "If you want to have the interActive Banner files "
+                    + "located in a separate directory from your HTML files, "
+                    + "you would specify this value relative to the document "
+                    + "base directory.  This value is automatically set when "
+                    + "an HTML file is loaded but can be overwritten by the "
+                    + "user.";
+      this.className = "This is the file name of the interActive Banner's "
+                     + "*.class file.  For the trial version, it should be set "
+                     + "to IABanner.class and for registered versions, it "
+                     + "should be set to your unique class file name.";
+      this.width = "This specifies the width, in pixels, of the interActive "
+                 + "Banner.  The internet standard is 468 but the banner can be "
+                 + "set to any other value.";
+      this.height = "This specifies the height, in pixels, of the interActive "
+                  + "Banner.  The internet standard is 70 but the banner can be "
+                  + "set to any other value.";
+      this.bgcolor = "This is the background color of all text.  The value "
+                   + "must be specified in standard hexadecimal HTML color "
+                   + "format (e.g., #ffffff=white, #ff0000=red, #00ff00=green, "
+                   + "#0000ff=blue).";
+      this.shownav = "This flag determines whether the interactive navigation "
+                   + "bar is displayed.  Please remember to bundle "
+                   + "navigation.gif along with the *.class file even if you "
+                   + "intend to hide it.  This will prevent the first banner "
+                   + "image from not displaying.";
+      this.borders = "This flag determines whether borders will be drawn "
+                   + "around the banner and between the image and text.";
+      this.delay = "This is the time that the applet will wait between "
+                 + "displaying banners.  The value should be specified in "
+                 + "milliseconds (1,000 milliseconds = 1 second).";
+      this.algorithm = "This is the algorithm that the interActive Banner will "
+                     + "use to determine the next banner to display.";
+      this.titleColor = "This is the color used to render all titles.  The "
+                      + "value must be specified in standard hexadecimal HTML "
+                      + "color format (e.g., #ffffff=white, #ff0000=red, "
+                      + "#00ff00=green, #0000ff=blue).";
+      this.titleFont = "This is the font used to render all banner titles.";
+      this.titleSize = "This is the point size used to render all banner "
+                     + "titles.";
+      this.titleStyle = "This is the style used to render all banner titles.";
+      this.descColor = "This is the color used to render all banner "
+                     + "descriptions.  The value must be specified in standard "
+                     + "hexadecimal HTML color format (e.g., #ffffff=white, "
+                     + "#ff0000=red, #00ff00=green, #0000ff=blue).";
+      this.descFont = "This is the font used to render all banner "
+                    + "descriptions.";
+      this.descSize = "This is the point size used to render all banner "
+                    + "descriptions.";
+      this.descStyle = "This is the style used to render all banner "
+                     + "descriptions.";
+      this.linkText = "This is the text that is used to render the link for "
+                    + "all banners (e.g., Click here)."
+      this.linkTarget = "This is the link target used for all banners.  The "
+                      + "values accepted are the same ones that are accepted "
+                      + "for the HTML <A TARGET=> tag.";
+      this.linkColor = "This is the color used to render all banner links.  "
+                     + "The value must be specified in standard hexadecimal "
+                     + "HTML color format (e.g., #ffffff=white, #ff0000=red, "
+                     + "#00ff00=green, #0000ff=blue).  The internet standard is"
+                     + "blue.";
+      this.linkFont = "This is the font used to render all banner links.";
+      this.linkStyle = "This is the style used to render all banner links.  "
+                     + "The internet standard is underline.";
+   }
+
+   function FontData(color, family, style, size)
+   {
+      this.color  = color;
+      this.family = family;
+      this.style  = style;
+      this.size   = size;
+      this.getFontValues = fd_getFontValues;
+   }
+
+   function fd_getFontValues()
+   {
+      with( this )
+      {
+         return family + "|" + style + "|" + size;
+      }
+   }
+
+   function LinkData(color, family, style, size, text, target)
+   {
+      this.color  = color;
+      this.family = family;
+      this.style  = style;
+      this.size   = size;
+      this.text   = "Click here";
+      this.target = "_self";
+      this.getFontValues = fd_getFontValues;
+   }
+
+   function BannerData(title, image, copy, link)
+   {
+      this.title = "" + title;
+      this.image = "" + image;
+      this.copy  = "" + copy;
+      this.link  = "" + link;
+      this.getBannerValues = bd_getBannerValues;
+      this.setBannerValues = bd_setBannerValues;
+   }
+
+   function bd_setBannerValues(values)
+   {
+      with( this )
+      {
+         var fields = values.split( "|" );
+
+         if( fields.length > 0 )
+         {
+            title = fields[0];
+         }
+
+         if( fields.length > 1 )
+         {
+            image = fields[1];
+         }
+
+         if( fields.length > 2 )
+         {
+            copy = fields[2];
+         }
+
+         if( fields.length > 3 )
+         {
+            link = fields[3];
+         }
+      }
+   }
+
+   function bd_getBannerValues(addQuotes)
+   {
+      with( this )
+      {
+         var t = title.fixQuote();
+         t = t.fixPipe();
+
+         var c = copy.fixQuote();
+         c = c.fixPipe();
+
+         return t + "|" + image + "|" + c.fixPipe() + "|" + link;
+      }
+   }
+
+   function AppletData()
+   {
+      // member data
+      this.copyright    = "www.iasys.com";
+      this.title        = new FontData( "#000000", "helvetica", "bold", 12 );
+      this.copy         = new FontData( "#000000", "helvetica", "normal", 12 );
+      this.link         = new LinkData( "#0000ff", "helvetica", "bold", 11, "Click here", "_self" );
+      this.imgbgcolor   = "#ffffff";
+      this.txtbgcolor   = "#ffc800";
+      this.shownav      = 1;
+      this.delay        = 10000;
+      this.border       = 1;
+      this.next         = "random";
+      this.banners      = new Array();
+      this.className    = "IABanner.class";
+      this.width        = 468;
+      this.height       = 70;
+      this.documentBase = "";
+      this.codeBase     = ".";
+
+      // member functions
+      this.getHTML = ad_getHTML;
+      this.load    = ad_load;
+   }
+
+   function ad_getHTML()
+   {
+      with( this )
+      {
+         var s = "<applet codebase=" + codeBase + " code=" + className + " width=" + width + " height=" + height + ">\n"
+               + "   <param name=(c)         value=\"" + copyright + "\">\n"
+               + "   <param name=titlecolor  value=\"" + title.color + "\">\n"
+               + "   <param name=titlefont   value=\"" + title.getFontValues() + "\">\n"
+               + "   <param name=copycolor   value=\"" + copy.color + "\">\n"
+               + "   <param name=copyfont    value=\"" + copy.getFontValues() + "\">\n"
+               + "   <param name=linktext    value=\"" + link.text.fixQuote() + "\">\n"
+               + "   <param name=linktarget  value=\"" + link.target.fixQuote() + "\">\n"
+               + "   <param name=linkcolor   value=\"" + link.color + "\">\n"
+               + "   <param name=linkfont    value=\"" + link.getFontValues() + "\">\n"
+               + "   <param name=txtbgcolor  value=\"" + txtbgcolor + "\">\n"
+               + "   <param name=shownav     value=\"" + shownav + "\">\n"
+               + "   <param name=delay       value=\"" + delay + "\">\n"
+               + "   <param name=next        value=\"" + next + "\">\n"
+               + "   <param name=border      value=\"" + border + "\">\n";
+
+         for( var i = 0; i < _ad.banners.length; i++ )
+         {
+            s += "   <param name=banner" + i + "     value=\"" + _ad.banners[i].getBannerValues() + "\">\n";
+         }
+
+         s += "</applet>\n";
+
+         return s;
+      }
+   }
+
+   function setStringValue(applet, parm, obj, key)
+   {
+      var s = applet.getParameter( parm );
+      if( !(s == "null" || s == "" || s == null) )
+      {
+         obj[key] = s;
+      }
+   }
+
+   function setBooleanValue(applet, parm, obj, key)
+   {
+      var s = "" + applet.getParameter( parm  );
+      if( !(s == "null" || s == "" || s == null) )
+      {
+         obj[key] = s == "1" ? 1 : 0;
+      }
+   }
+
+   function setIntegerValue(applet, parm, obj, key)
+   {
+      var s = applet.getParameter( parm  );
+      if( !(s == "null" || s == "" || s == null) )
+      {
+         obj[key] = parseInt( s );
+      }
+   }
+
+   function setFontValue(applet, parm, fontData)
+   {
+      var s = "" + applet.getParameter( parm  );
+      if( !(s == "null" || s == "" || s == null) )
+      {
+         var fields = s.split( "|" );
+
+         if( fields.length > 0 )
+         {
+            fontData.family = fields[0];
+         }
+
+         if( fields.length > 1 )
+         {
+            fontData.style = fields[1];
+         }
+
+         if( fields.length > 2 )
+         {
+            fontData.size = parseInt( fields[2] );
+         }
+      }
+   }
+
+   function setBannerValues(applet, banners)
+   {
+      banners.length = 0;
+      for( var i = 0; i < 1000; i++ )
+      {
+         var s = "" + applet.getParameter( "banner" + i  );
+         if( s == "null" || s == "" || s == null ) break;
+         var bd = new BannerData();
+         bd.setBannerValues( s );
+         banners[i] = bd;
+      }
+   }
+
+   function ad_load(applet)
+   {
+      with( this )
+      {
+         var s = "" + applet.getDocumentBase();
+         documentBase = s.substring( 0, s.lastIndexOf( "/" ) + 1 );
+         codeBase     = "" + applet.getCodeBase();
+         className    = applet.getClass().getName();
+         width        = applet.getSize().width;
+         height       = applet.getSize().height;
+
+         setStringValue( applet, "titlecolor", title, "color"      );
+         setStringValue( applet, "copycolor",  copy,  "color"      );
+         setStringValue( applet, "txtbgcolor", this,  "txtbgcolor" );
+         setStringValue( applet, "linkcolor",  link,  "color"      );
+         setStringValue( applet, "linktext",   link,  "text"       );
+         setStringValue( applet, "linktarget", link,  "target"     );
+         setStringValue( applet, "next",       this,  "next"       );
+
+         setIntegerValue( applet, "delay", this, "delay" );
+
+         setBooleanValue( applet, "shownav", this, "shownav" );
+         setBooleanValue( applet, "border",  this, "border" );
+
+         setFontValue( applet, "titlefont", title );
+         setFontValue( applet, "copyfont",  copy  );
+         setFontValue( applet, "linkfont",  link  );
+
+         setBannerValues( applet, this.banners );
+      }
+   }
+
+   function getStyle(width, height, more)
+   {
+      var l = (screen.availWidth - width) / 2;
+      var t = (screen.availHeight - height) / 2;
+      var s = "width=" + width
+            + ",height=" + height
+            + ",left=" + l
+            + ",top=" + t
+            + "," + more;
+      return s;
+   }
+
+   function doOnLoad()
+   {
+      with( document.gui.banners )
+      {
+         if( options.length == 1 && options[0].value == -1 )
+         {
+            doWait();
+            options.length = 0;
+            parent.iabload.document.location = "demo.html";
+            setTimeout( "doDelayedLoad()", 3000 );
+         }
+      }
+   }
+
+   function doWait()
+   {
+      var style = getStyle( 200, 100, "scrollbars=0" );
+      _wnd = window.open( "", "IAB", style );
+      with( _wnd.document )
+      {
+         open();
+         writeln( "<table width=100% height=100% border=0 cellpadding=0 cellspacing=0><tr valign=center><th>Please wait...</th></tr></table>" );
+         close();
+      }
+      _wnd.focus();
+      setTimeout( "_wnd.focus();",  500 );
+      setTimeout( "_wnd.focus();", 1000 );
+      setTimeout( "_wnd.focus();", 1500 );
+      setTimeout( "_wnd.focus();", 2000 );
+      setTimeout( "_wnd.focus();", 2500 );
+   }
+
+   function getSelectedOption(opt)
+   {
+      with( opt )
+      {
+         return options[selectedIndex].value;
+      }
+   }
+
+   function setSelectedOption(opt, selValue)
+   {
+      with( opt )
+      {
+         for( var i = 0; i < options.length; i++ )
+         {
+            if( options[i].value == selValue )
+            {
+               options[i].selected = true;
+               break;
+            }
+         }
+      }
+   }
+
+   function getSelectedBanner()
+   {
+      with( document.gui.banners )
+      {
+         if( selectedIndex >= 0 )
+         {
+            return _ad.banners[selectedIndex];
+         }
+         else
+         {
+            return null;
+         }
+      }
+   }
+
+   function doLoad()
+   {
+      with( document.gui )
+      {
+         doWait();
+         _sInputFile = file.value
+         parent.iabload.document.location = "file:/" + file.value;
+         setTimeout( "doDelayedLoad()", 3000 );
+      }
+   }
+
+   function doDelayedLoad()
+   {
+      with( parent.iabload.document )
+      {
+         for( var i = 0; i < applets.length; i++ )
+         {
+            var applet = applets[i];
+            var appletInfo = applet.getAppletInfo();
+            if( appletInfo.indexOf( "interActive Banner" ) == 0 )
+            {
+               _ad = new AppletData();
+               _ad.load( applet );
+               doDataExchange( true );
+               break;
+            }
+         }
+         _wnd.close();
+      }
+   }
+
+   function doDataExchange(toForm)
+   {
+      with( document.gui )
+      {
+         if( toForm )
+         {
+            documentBase.value = _ad.documentBase;
+            codeBase.value = _ad.codeBase;
+
+            // call this function to convert codebase from absolute to relative
+            doChangeDocumentBase();
+
+            // now, set the value that's on the form to the internal object
+            _ad.codeBase = codeBase.value;
+
+            className.value = _ad.className;
+            width.value = _ad.width;
+            height.value = _ad.height;
+            titlecolor.value = _ad.title.color;
+            setSelectedOption( titlefamily, _ad.title.family );
+            setSelectedOption( titlestyle, _ad.title.style );
+            titlesize.value = _ad.title.size;
+            copycolor.value= _ad.copy.color;
+            setSelectedOption( copyfamily, _ad.copy.family );
+            setSelectedOption( copystyle, _ad.copy.style );
+            copysize.value = _ad.copy.size;
+            linktext.value = _ad.link.text;
+            linktarget.value = _ad.link.target;
+            linkcolor.value = _ad.link.color;
+            setSelectedOption( linkfamily, _ad.link.family );
+            setSelectedOption( linkstyle, _ad.link.style );
+            bgcolor.value = _ad.txtbgcolor;
+            setSelectedOption( shownav, _ad.shownav );
+            delay.value = _ad.delay;
+            setSelectedOption( border, _ad.border );
+            setSelectedOption( next, _ad.next );
+            drawBannerData();
+         }
+         else
+         {
+            _ad.className = className.value;
+            _ad.documentBase = documentBase.value;
+            _ad.codeBase = codeBase.value;
+            _ad.width = parseInt( width.value );
+            _ad.height = parseInt( height.value );
+            _ad.title.color = titlecolor.value;
+            _ad.title.family = getSelectedOption( titlefamily );
+            _ad.title.style = getSelectedOption( titlestyle );
+            _ad.title.size = titlesize.value;
+            _ad.copy.color = copycolor.value;
+            _ad.copy.family = getSelectedOption( copyfamily );
+            _ad.copy.style = getSelectedOption( copystyle );
+            _ad.copy.size = copysize.value;
+            _ad.link.text = linktext.value;
+            _ad.link.target = linktarget.value;
+            _ad.link.color = linkcolor.value;
+            _ad.link.family = getSelectedOption( linkfamily );
+            _ad.link.style = getSelectedOption( linkstyle );
+            _ad.txtbgcolor = bgcolor.value;
+            _ad.shownav = getSelectedOption( shownav );
+            _ad.delay = delay.value;
+            _ad.border = getSelectedOption( border );
+            _ad.next = getSelectedOption( next );
+         }
+      }
+   }
+
+   function doChangeDocumentBase()
+   {
+      with( document.gui )
+      {
+         var sDocumentBase = documentBase.value;
+         if( sDocumentBase != "" )
+         {
+            var sCodeBase = codeBase.value;
+            if( sCodeBase.indexOf( sDocumentBase ) == 0 )
+            {
+               sCodeBase = sCodeBase.substring( sDocumentBase.length );
+               if( sCodeBase == "" ) sCodeBase = ".";
+               codeBase.value = sCodeBase;
+            }
+
+            if( sDocumentBase.substring( sDocumentBase.length - 1 ) != "/" )
+            {
+               sDocumentBase += "/";
+               documentBase.value = sDocumentBase;
+            }
+         }
+
+         _ad.documentBase = documentBase.value;
+         _ad.codeBase = codeBase.value;
+      }
+   }
+
+   function doView()
+   {
+      doDataExchange( false );
+
+      //_wnd = window.open( "", "IAB", getStyle( 100, 100, "" ) );
+      //_wnd.close();
+
+      var style = getStyle( _ad.width + 20, _ad.height + 20, "scrollbars=0,resizable=1,resizeable=1" );
+      _wnd = window.open( "", "IAB", style );
+
+      with( _wnd.document )
+      {
+         open();
+         writeln( "<base href='" + this.document.gui.documentBase.value + "'>" );
+         writeln( _ad.getHTML() );
+         close();
+      }
+
+      _wnd.focus();
+   }
+
+   function doGenerate()
+   {
+      doDataExchange( false );
+
+      /*
+      _wnd = window.open( "", "IAB", getStyle( 100, 100, "" ) );
+      _wnd.close();
+      */
+
+      var style = getStyle( 450, 300, "scrollbars=0,resizable=1,resizeable=1" );
+      _wnd = window.open( "iab-editOutput.html", "IAB", style );
+      _wnd.focus();
+   }
+
+   function drawBannerData()
+   {
+      with( document.gui.banners )
+      {
+         options.length = _ad.banners.length;
+         for( var i = 0; i < _ad.banners.length; i++ )
+         {
+            options[i] = new Option( _ad.banners[i].title,
+                                     _ad.banners[i].getBannerValues(),
+                                     true, true );
+         }
+         selectedIndex = 0;
+      }
+   }
+
+   function doMoveUp()
+   {
+      with( document.gui.banners )
+      {
+         if( selectedIndex > 0 )
+         {
+            var i = selectedIndex;
+            var tmp = _ad.banners[i - 1];
+
+            _ad.banners[i - 1] = _ad.banners[i];
+            _ad.banners[i] = tmp;
+
+            drawBannerData();
+            selectedIndex = i - 1;
+         }
+      }
+   }
+
+   function doMoveDown()
+   {
+      with( document.gui.banners )
+      {
+         if( selectedIndex < (options.length - 1) )
+         {
+            var i   = selectedIndex;
+            var tmp = _ad.banners[i + 1];
+
+            _ad.banners[i + 1] = _ad.banners[i];
+            _ad.banners[i] = tmp;
+
+            drawBannerData();
+            selectedIndex = i + 1;
+         }
+      }
+   }
+
+   function doEdit()
+   {
+      /*
+      _wnd = window.open( "", "IAB", getStyle( 100, 100, "" ) );
+      _wnd.close();
+      */
+
+      // ensure codebase and document base are up-to-date since editor uses it
+      var style = getStyle( 600, 400, "scrollbars=0,resizable=1,resizeable=1" );
+      _wnd = window.open( "iab-editBanner.html", "IAB", style );
+      _wnd.focus();
+   }
+
+   function doDelete()
+   {
+      with( document.gui.banners )
+      {
+         if( selectedIndex >= 0 && selectedIndex < options.length
+         &&  confirm( "Are you sure you want to delete data for the current banner?" ) )
+         {
+            var newBanners = new Array();
+            var j = 0;
+            for( var i = 0; i < _ad.banners.length; i++ )
+            {
+               if( i != selectedIndex )
+               {
+                  newBanners[j++] = _ad.banners[i];
+               }
+            }
+            _ad.banners = newBanners;
+            drawBannerData();
+         }
+      }
+   }
+
+   function doAdd()
+   {
+      var bd = new BannerData( "", "", "", "http://" );
+      _ad.banners[_ad.banners.length] = bd;
+      drawBannerData();
+      document.gui.banners.selectedIndex = _ad.banners.length - 1;
+      doEdit();
+   }
+
+   function doSelectColor(ctl)
+   {
+      _ctlColor = ctl;
+
+      /*
+      _wnd = window.open( "", "IAB", getStyle( 100, 100, "" ) );
+      _wnd.close();
+      */
+
+      var style = getStyle( 600, 400, "scrollbars=1,resizable=1,resizeable=1" );
+      _wnd = window.open( "iab-editColors.html", "IAB", style );
+      _wnd.focus();
+   }
+</script>
+<style type=text/css>
+   TD   { font-family:arial; font-size:12pt; color:black }
+   TH   { font-family:arial; font-size:12pt; color:white; background:navy }
+   .BTN { font-family:arial; font-size:12pt; color:black; text-decoration:normal }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body onLoad=doOnLoad()>
+<form name=gui>
+<table border=1 cellpadding=0 cellspacing=0><tr><td>
+<table border=0 cellpadding=3 cellspacing=0 bgcolor=silver>
+   <tr>
+      <th colspan=2><a name=INPUT>Input File</a></th>
+   </tr>
+   <tr>
+      <td colspan=2>To load values from an existing HTML page, select the file
+         by selecting the <i>"Browse"</i> button or typing in the file
+         specification and then click the <i>"Load Applet Values"</i> button.
+      </td>
+   </tr>
+   <tr>
+      <td align=right>File Name</td>
+      <td><input name=file type=file></td>
+   </tr>
+   <tr>
+      <td align=right>&nbsp;</td>
+      <td><input type=button value="Load Applet Values" onClick=doLoad()></td>
+   </tr>
+   <tr>
+      <th colspan=2><a name=GENERAL>General Options</a></th>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.documentBase)">Document Base Directory</a></td>
+      <td align=left><input name=documentBase onChange=doChangeDocumentBase()></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.codeBase)">Code Base Directory</a></td>
+      <td align=left><input name=codeBase></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.className)">Class Name</a></td>
+      <td align=left><input name=className></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.width)">Width</a></td>
+      <td align=left><input name=width></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.height)">Height</a></td>
+      <td align=left><input name=height></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.bgcolor)">Background Color</a></td>
+      <td align=left><input name=bgcolor> <input type=button value="Select..." onClick="doSelectColor(document.gui.bgcolor)"></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.shownav)">Show Navigation Bar</a></td>
+      <td align=left><select name=shownav>
+         <option value=0>No
+         <option value=1 selected>Yes
+      </select></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.borders)">Show Borders</a></td>
+      <td align=left><select name=border>
+         <option value=0>No
+         <option value=1 selected>Yes
+      </select></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.delay)">Delay Between Banners</a></td>
+      <td align=left><input name=delay value=1000> <i>(milliseconds)</i></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.algorithm)">Display Algorithm</a></td>
+      <td align=left><select name=next>
+         <option value=random>Random
+         <option value=sequential>Sequential
+      </select></td>
+   </tr>
+   <tr>
+      <th colspan=2><a name=TITLE>Title Font Options</a></th>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.titleColor)">Color</a></td>
+      <td align=left><input name=titlecolor> <input type=button value="Select..." onClick="doSelectColor(document.gui.titlecolor)"></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.titleFont)">Font</a></td>
+      <td align=left><select name=titlefamily>
+         <option value=courier>Courier
+         <option value=dialog>Dialog
+         <option value=helvetica selected>Helvetica
+      </select></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.titleSize)">Size</a></td>
+      <td align=left><input name=titlesize></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.titleStyle)">Style</a></td>
+      <td align=left><select name=titlestyle>
+         <option value=bold>Bold
+         <option value=italic>Italic
+         <option value=italic-bold>Italic-Bold
+         <option value=normal selected>Normal
+      </select></td>
+   </tr>
+   <tr>
+      <th colspan=2><a name=DESCRIPTION>Description Font Options</a></th>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.descColor)">Color</a></td>
+      <td align=left><input name=copycolor> <input type=button value="Select..." onClick="doSelectColor(document.gui.copycolor)"></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.descFont)">Font</a></td>
+      <td align=left><select name=copyfamily>
+         <option value=courier>Courier
+         <option value=dialog>Dialog
+         <option value=helvetica selected>Helvetica
+      </select></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.descSize)">Size</a></td>
+      <td align=left><input name=copysize></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.descStyle)">Style</a></td>
+      <td align=left><select name=copystyle>
+         <option value=bold>Bold
+         <option value=italic>Italic
+         <option value=italic-bold>Italic-Bold
+         <option value=normal selected>Normal
+      </select></td>
+   </tr>
+   <tr>
+      <th colspan=2><a name=LINK>Link Options</a></th>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.linkText)">Text</a></td>
+      <td align=left><input name=linktext value="Click here"></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.linkTarget)">Target</a></td>
+      <td align=left><input name=linktarget value="_self"></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.linkColor)">Color</a></td>
+      <td align=left><input name=linkcolor> <input type=button value="Select..." onClick="doSelectColor(document.gui.linkcolor)"></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.linkFont)">Font</a></td>
+      <td align=left><select name=linkfamily>
+         <option value=courier>Courier
+         <option value=dialog>Dialog
+         <option value=helvetica selected>Helvetica
+      </select></td>
+   </tr>
+   <tr>
+      <td align=right><a href="javascript:alert(_hlp.linkStyle)">Style</a></td>
+      <td align=left><select name=linkstyle>
+         <option value=bold>Bold
+         <option value=italic>Italic
+         <option value=italic-bold>Italic-Bold
+         <option value=normal selected>Normal
+      </select></td>
+   </tr>
+   <tr>
+      <th colspan=2><a name=BANNER>Banner Data</a></th>
+   </tr>
+   <tr>
+      <td align=center colspan=2>
+         <table border=0 cellpadding=0 cellspacing=0>
+            <tr>
+               <td valign=top><select name=banners size=5 width=100><option value=-1>12345678901234567890</select></td>
+               <td>&nbsp;</td>
+               <td>
+                  <input type=button value=" /\ " onClick=doMoveUp()><br>
+                  <input type=button value=" \/ " onClick=doMoveDown()>
+               </td>
+               <td>&nbsp;</td>
+               <td valign=center>
+                  <table border=1 cellpadding=3 cellspacing=0>
+                     <tr bgcolor=lightgoldenrodyellow align=center><td>&nbsp;<a class=BTN href=javascript:doEdit()><small>Edit...</small></a>&nbsp;</td></tr>
+                     <tr bgcolor=lightgoldenrodyellow align=center><td>&nbsp;<a class=BTN href=javascript:doDelete()><small>Delete</small></a>&nbsp;</td></tr>
+                     <tr bgcolor=lightgoldenrodyellow align=center><td>&nbsp;<a class=BTN href=javascript:doAdd()><small>Add...</small></a>&nbsp;</td></tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </td>
+   </tr>
+</table>
+</td></tr></table>
+</form>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+</body>
+<applet codebase=./ code=IABanner.class width=1 height=1></applet>
+</html>

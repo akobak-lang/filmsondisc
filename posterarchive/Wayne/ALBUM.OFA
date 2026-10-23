@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<!-- OfotoNow Album Data File -->
+<!-- Copyright 2001 Ofoto, Inc.  All rights reserved. -->
+<on:album version="3.0" name="Wayne">
+    <!-- groups album belongs to -->
+    <on:groups>
+    </on:groups>
+
+    <!-- files in album -->
+    <on:members>
+        <on:member hidden="0">
+            Alamow.jpg
+        </on:member>
+        <on:member hidden="0">
+            Alamow_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Barbaria.jpg
+        </on:member>
+        <on:member hidden="0">
+            Barbaria_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Blood2.jpg
+        </on:member>
+        <on:member hidden="0">
+            Blood2_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Bloodal.jpg
+        </on:member>
+        <on:member hidden="0">
+            Bloodal_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Branigan.jpg
+        </on:member>
+        <on:member hidden="0">
+            Branigan_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Cahill.jpg
+        </on:member>
+        <on:member hidden="0">
+            Cahill_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Cowboys.jpg
+        </on:member>
+        <on:member hidden="0">
+            Cowboys_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Dovonva.jpg
+        </on:member>
+        <on:member hidden="0">
+            Dovonva_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Hatari.jpg
+        </on:member>
+        <on:member hidden="0">
+            Hatari_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Hellfig.jpg
+        </on:member>
+        <on:member hidden="0">
+            Hellfig_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Inharms.jpg
+        </on:member>
+        <on:member hidden="0">
+            Inharms_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Jetpil.jpg
+        </on:member>
+        <on:member hidden="0">
+            Jetpil_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Jetpilot.jpg
+        </on:member>
+        <on:member hidden="0">
+            Jetpilot_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Longest.jpg
+        </on:member>
+        <on:member hidden="0">
+            Longest_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Reap.jpg
+        </on:member>
+        <on:member hidden="0">
+            Reap_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Riogran.jpg
+        </on:member>
+        <on:member hidden="0">
+            Riogran_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Sandsof.jpg
+        </on:member>
+        <on:member hidden="0">
+            Sandsof_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Seachase.jpg
+        </on:member>
+        <on:member hidden="0">
+            Seachase_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Trainrob.jpg
+        </on:member>
+        <on:member hidden="0">
+            Trainrob_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Troubal.jpg
+        </on:member>
+        <on:member hidden="0">
+            Troubal_small.jpg
+        </on:member>
+        <on:member hidden="0">
+            Undefea.jpg
+        </on:member>
+        <on:member hidden="0">
+            Undefea_small.jpg
+        </on:member>
+    </on:members>
+</on:album>

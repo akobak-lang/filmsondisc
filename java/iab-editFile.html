@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>Choose Image File</title>
+<script language=JavaScript>
+   function doOK()
+   {
+      opener.doChangeImage( document.gui.file.value );
+      window.close();
+   }
+
+   function doCancel()
+   {
+      window.close();
+   }
+</script>
+<style type=text/css>
+   TD { font-family:arial; font-size:12pt; color:black }
+   TH { font-family:arial; font-size:12pt; color:white; background:navy }
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../responsive.css">
+</head>
+<body>
+<form name=gui>
+<center>
+<table border=0 cellpadding=0 cellspacing=0><tr><td>
+   Click the browse button to select the file name of the image.  Remember that
+   the image must be located relative to the codebase.
+</td></tr></table>
+<p>
+<input type=file name=file>
+<p>
+<input type=button width=100 value=OK     onClick=doOK()>
+<input type=button width=100 value=Cancel onClick=doCancel()>
+</center>
+</form>
+</body>
+</head>
+</html>
