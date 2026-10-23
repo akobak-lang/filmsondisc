@@ -142,3 +142,8 @@ body, td, p { word-wrap: break-word; overflow-wrap: break-word; }
   cursor: pointer;
 }
 .fod-go:hover, .fod-go:focus { background: #cc0000; border-color: #cc0000; }
+
+/* --- Wide screens: only the main column stretches (see fod-mobile.js) --- */
+@media (min-width: 701px) {
+  table.fod-flex { table-layout: fixed; }
+}

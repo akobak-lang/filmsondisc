@@ -25,6 +25,35 @@
       }
     }
   }
+  // Wide screens: the layouts give every column a pixel width, so browsers
+  // stretch all of them, dividers included, and the main column drifts off
+  // centre. Let only the widest column stretch; the rest keep their size.
+  var cols = document.getElementsByTagName('table');
+  for (i = 0; i < cols.length; i++) {
+    if (!/fod-cols/.test(cols[i].className)) continue;
+    if (cols[i].getAttribute('width') !== '100%' && px(cols[i]) < 500) continue;
+    var best = null, bw = 0, cs = cols[i].rows[0].cells;
+    for (j = 0; j < cs.length; j++) {
+      if (px(cs[j]) > bw) { bw = px(cs[j]); best = cs[j]; }
+    }
+    if (best && bw >= 150) {
+      best.removeAttribute('width');
+      cols[i].className += ' fod-flex';
+    }
+  }
+  // A fixed column whose picture or text is wider than its width attribute
+  // used to get pushed wider by the browser; do that explicitly now.
+  function fitFixed() {
+    for (var k = 0; k < cols.length; k++) {
+      if (!/fod-flex/.test(cols[k].className)) continue;
+      var cc = cols[k].rows[0].cells;
+      for (var m = 0; m < cc.length; m++) {
+        if (px(cc[m]) && cc[m].scrollWidth > cc[m].clientWidth + 1) cc[m].setAttribute('width', cc[m].scrollWidth);
+      }
+    }
+  }
+  fitFixed();
+  window.addEventListener('load', fitFixed);
   // Real data tables (many rows, 4+ columns) keep their columns and scroll
   // sideways inside their own box instead of widening the page.
   for (i = 0; i < tables.length; i++) {
