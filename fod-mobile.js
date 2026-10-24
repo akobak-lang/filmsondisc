@@ -32,11 +32,16 @@
   for (i = 0; i < cols.length; i++) {
     if (!/fod-cols/.test(cols[i].className)) continue;
     if (cols[i].getAttribute('width') !== '100%' && px(cols[i]) < 500) continue;
-    var best = null, bw = 0, cs = cols[i].rows[0].cells;
+    // Only when one column is clearly the main one: much wider than the
+    // rest, and no %-width cells (a 100% spacer would take all the room in
+    // fixed layout). Photo grids, with equal columns, don't qualify.
+    var best = null, bw = 0, second = 0, pct = false, cs = cols[i].rows[0].cells;
     for (j = 0; j < cs.length; j++) {
-      if (px(cs[j]) > bw) { bw = px(cs[j]); best = cs[j]; }
+      var cw = px(cs[j]);
+      if (/%/.test(cs[j].getAttribute('width') || '')) pct = true;
+      if (cw > bw) { second = bw; bw = cw; best = cs[j]; } else if (cw > second) second = cw;
     }
-    if (best && bw >= 150) {
+    if (best && !pct && bw >= 150 && bw >= second * 1.5 && best.textContent.length > 100) {
       best.removeAttribute('width');
       cols[i].className += ' fod-flex';
     }

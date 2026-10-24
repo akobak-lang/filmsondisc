@@ -146,4 +146,13 @@ body, td, p { word-wrap: break-word; overflow-wrap: break-word; }
 /* --- Wide screens: only the main column stretches (see fod-mobile.js) --- */
 @media (min-width: 701px) {
   table.fod-flex { table-layout: fixed; }
+  /* Layout columns start at the top, not halfway down beside a long neighbour */
+  table.fod-cols > tbody > tr > td, table.fod-cols > tr > td { vertical-align: top; }
+}
+
+/* --- Very wide screens: keep the page at a readable width, centred.
+   The pages were laid out for ~800px screens; past ~1200px photos drift
+   away from their captions and lines get too long to read. --- */
+@media (min-width: 1241px) {
+  body { max-width: 1200px; margin-left: auto; margin-right: auto; }
 }
