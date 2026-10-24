@@ -44,11 +44,30 @@
     if (best && !pct && bw >= 150 && bw >= second * 1.5 && best.textContent.length > 100) {
       best.removeAttribute('width');
       cols[i].className += ' fod-flex';
+      // Inside a container sized by its content (a width="150" table that
+      // old browsers stretched), the stretchy column has nothing to stretch
+      // into and collapses. Keep the original layout there.
+      if (window.innerWidth > 700 && best.getBoundingClientRect().width < bw - 1) {
+        best.setAttribute('width', bw);
+        cols[i].className = cols[i].className.replace(' fod-flex', '');
+      }
     }
   }
   // A fixed column whose picture or text is wider than its width attribute
   // used to get pushed wider by the browser; do that explicitly now.
   function fitFixed() {
+    // A width="100%" neighbour squeezes pixel-width sidebars down to a sliver
+    // in today's browsers; 2002 browsers kept the sidebar at its width.
+    if (window.innerWidth > 700) {
+      for (var s = 0; s < cols.length; s++) {
+        if (/fod-flex/.test(cols[s].className)) continue;
+        var sc = cols[s].rows[0].cells;
+        for (var q = 0; q < sc.length; q++) {
+          var sw = px(sc[q]);
+          if (sw >= 100 && sc[q].textContent.length > 100 && sc[q].getBoundingClientRect().width < sw * 0.7) sc[q].style.minWidth = sw + 'px';
+        }
+      }
+    }
     for (var k = 0; k < cols.length; k++) {
       if (!/fod-flex/.test(cols[k].className)) continue;
       var cc = cols[k].rows[0].cells;
