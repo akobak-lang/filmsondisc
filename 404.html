@@ -1,0 +1,127 @@
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Page Not Found - Films on Disc</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<script>
+// GitHub Pages serves this page for any address that doesn't exist. The old
+// Windows host ignored capitalization, so Google results and old bookmarks
+// often differ in case (/features/... vs /Features/...), and some old links
+// had typos or .asp pages. Look the address up in fod-paths.json (written by
+// build_deploy.mjs) and quietly send the visitor to the real page.
+(function () {
+  var parts = location.pathname.split('/');
+  // On akobak-lang.github.io the site lives under /filmsondisc/; on its own
+  // domain it's at the root.
+  var base = /\.github\.io$/.test(location.hostname) ? '/' + parts[1] + '/' : '/';
+  window.FOD_BASE = base;
+  document.write('<base href="' + base + '">');
+  document.documentElement.className += ' fod-checking';
+
+  var rel = location.pathname.slice(base.length);
+  try { rel = decodeURIComponent(rel); } catch (e) {}
+  rel = rel.normalize ? rel.normalize('NFC') : rel;
+  var loose = function (s) { return s.toLowerCase().replace(/%20|[\s_\-©]/g, ''); };
+
+  function show() { document.documentElement.className = document.documentElement.className.replace(' fod-checking', ''); }
+  function go(target) {
+    if (target === undefined || target === null || target === rel) return false;
+    location.replace(base + encodeURI(target).replace(/#/g, '%23') + location.search + location.hash);
+    return true;
+  }
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', base + 'fod-paths.json');
+  xhr.onload = function () {
+    var map;
+    try { map = JSON.parse(xhr.responseText); } catch (e) { return show(); }
+    var key = rel.replace(/\/+$/, '').toLowerCase();
+    var name = key.split('/').pop();
+    var tries = [key, key.replace(/\.asp$/, '.htm'), key.replace(/\.html$/, '.htm'), key.replace(/\.htm$/, '.html')];
+    for (var i = 0; i < tries.length; i++) {
+      if (map.paths[tries[i]] !== undefined && go(map.paths[tries[i]])) return;
+    }
+    var n = name.replace(/\.asp$/, '.htm');
+    var m = n.match(/^(.*?)(\.html?)$/);
+    var names = [n];
+    if (m) names.push(m[1] + 's' + m[2], m[1] + (m[2] === '.htm' ? '.html' : '.htm'));
+    for (i = 0; i < names.length; i++) {
+      if (map.names[loose(names[i])] && go(map.names[loose(names[i])])) return;
+    }
+    show();
+  };
+  xhr.onerror = show;
+  xhr.send();
+  setTimeout(show, 4000);
+})();
+</script>
+<link rel="stylesheet" href="responsive.css">
+<style>
+html.fod-checking body { visibility: hidden; }
+.nf { max-width: 560px; margin: 30px auto; text-align: center; }
+.nf h1 { font-size: 22px; color: #cc0000; margin-bottom: 6px; }
+.nf .q { width: 260px; }
+</style>
+</head>
+
+<body>
+<!-- site-header -->
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="736" style="font-size: 8pt">
+      <p align="center"><a href="index.htm" target="_parent" title="Films on Disc home"><img src="_borders/DVDheadwhite_copy.jpg" border="0" width="568" height="53"></a><br>
+      <font face="Arial"><a href="dvdreviews.htm"
+      target="_parent"><font color="#000000">DVD Review Archive</font></a>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="features.htm" target="_parent"><font
+      color="#000000">Feature Archive</font></a>&nbsp; <a href="back_issues.htm" target="_parent"><font color="#000000">Back Issues</font></a>&nbsp; <a
+      href="newlinks.htm" target="_parent"><font
+      color="#000000">Links</font></a>&nbsp;&nbsp; <a
+      href="DVDmia.htm" target="_parent"><font
+      color="#000000">DVD MIA</font></a>&nbsp;&nbsp; <a
+      href="DVDalerts/" target="_parent"><font color="#000000">DVD
+      Alerts</font></a>&nbsp;&nbsp;<a
+      href="movieposterarchives.htm"><font
+      color="#000000"> </font></a><a
+      href="movieposterarchives.htm" target="_parent"><font
+      color="#000000">Movie Posters</font></a> <a
+      href="2-BitLaser.htm" target="_parent"><font
+      color="#000000">&nbsp; Laser</font></a>&nbsp; <a
+      href="masthead.htm" target="_parent"><font
+      color="#000000">Site Info</font></a>&nbsp;&nbsp;&nbsp;<a
+      href="index.htm" target="_parent"><font
+      color="#000000">Home</font></a>&nbsp;&nbsp;<a
+      href="mailto:stu@filmsondisc.com"><font color="#000000">E-mail</font></a><br><input form="fod-search" type="search" name="q" class="fod-q" placeholder="Search Films on Disc" aria-label="Search Films on Disc"> <button form="fod-search" type="submit" class="fod-go">Search</button>&nbsp;<br>
+      © 2002 Films on Disc&nbsp;&nbsp;Stuart J. Kobak ALL RIGHTS RESERVED.<br>
+      </font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  </tr>
+</table>
+<!-- /site-header -->
+
+<div class="nf">
+<h1>Page Not Found</h1>
+<p>Sorry, we couldn't find that page. It may have moved when Films on Disc changed homes.</p>
+<p><input type="search" id="nf-q" class="fod-q q" placeholder="Search Films on Disc" aria-label="Search Films on Disc">
+<button type="button" class="fod-go" onclick="nfSearch()">Search</button></p>
+<p><a href="index.htm">Home</a> &nbsp;|&nbsp; <a href="dvdreviews.htm">DVD Review Archive</a> &nbsp;|&nbsp;
+<a href="features.htm">Feature Archive</a> &nbsp;|&nbsp; <a href="back_issues.htm">Back Issues</a></p>
+</div>
+<script>
+// Offer a search pre-filled with the words from the missing address.
+(function () {
+  var words = decodeURIComponent(location.pathname.split('/').pop() || '')
+    .replace(/\.(html?|asp)$/i, '').replace(/[_\-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  document.getElementById('nf-q').value = words;
+})();
+function nfSearch() {
+  var q = document.getElementById('nf-q').value;
+  location.href = 'https://www.google.com/search?as_sitesearch=filmsondisc.com&q=' + encodeURIComponent(q);
+}
+document.getElementById('nf-q').addEventListener('keydown', function (e) { if (e.key === 'Enter') nfSearch(); });
+</script>
+<form id="fod-search" action="https://www.google.com/search" method="get"><input type="hidden" name="as_sitesearch" value="filmsondisc.com"></form>
+<script src="fod-mobile.js"></script>
+</body>
+
+</html>

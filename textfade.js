@@ -266,7 +266,7 @@
     var list = [];
     for (var i = 0; i < applets.length; i++) {
       var code = (applets[i].getAttribute('code') || '').toLowerCase();
-      if (code === 'TextFade.class') {
+      if (code === 'textfade.class') {
         list.push(applets[i]);
       }
     }
